@@ -1,0 +1,8 @@
+# Requisitos principales
+sqlalchemy>=1.4.0
+
+# Opcional: para pruebas si usas pytest
+# pytest>=7.0.0
+
+# Opcional: para extender a una app web
+# flask>=2.0.0
