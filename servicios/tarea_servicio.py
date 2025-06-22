@@ -1,50 +1,57 @@
-from modelos.usuario import Usuario
+from datetime import datetime
+
 from modelos.tarea import Tarea
-from repositorios.tarea_repositorio import crear_tarea, obtener_tareas, actualizar_tarea, eliminar_tarea
-from sqlalchemy.orm import Session
-
-def crear_nueva_tarea(db: Session, nombre: str, descripcion: str, usuario_id: int):
-    return crear_tarea(db, nombre, descripcion, usuario_id)
-
-def ver_tareas_usuario(db: Session, usuario_id: int):
-    return obtener_tareas(db, usuario_id)
-
-def marcar_tarea_como_completada(db: Session, tarea_id: int):
-    return actualizar_tarea(db, tarea_id, True)
-
-def eliminar_una_tarea(db: Session, tarea_id: int):
-    return eliminar_tarea(db, tarea_id)
+from repositorios.tarea_repositorio import TareaRepositorio
+from repositorios.usuario_repositorio import UsuarioRepositorio
 
 
-def crear_nueva_tarea(db: Session, nombre: str, descripcion: str, usuario_id: int):
-    if not nombre or not nombre.strip():
-        raise ValueError("El nombre de la tarea es obligatorio.")
-    if not descripcion or not descripcion.strip():
-        raise ValueError("La descripción de la tarea es obligatoria.")
-    if not db.query(Usuario).filter(Usuario.id == usuario_id).first():
-        raise ValueError(f"No existe un usuario con ID {usuario_id}.")
+class TareaServicio:
+    def __init__(self, tarea_repo: TareaRepositorio,
+                 usuario_repo: UsuarioRepositorio):
+        self.tarea_repo = tarea_repo
+        self.usuario_repo = usuario_repo
 
-    return crear_tarea(db, nombre.strip(), descripcion.strip(), usuario_id)
+    def crear_tarea(
+            self,
+            usuario_id,
+            titulo,
+            descripcion=None,
+            fecha_limite=None,
+            estado=False,
+            prioridad=None):
+        if not titulo:
+            raise ValueError("El título de la tarea es obligatorio.")
 
-def ver_tareas_usuario(db: Session, usuario_id: int):
-    if not db.query(Usuario).filter(Usuario.id == usuario_id).first():
-        raise ValueError(f"No existe un usuario con ID {usuario_id}.")
-    return obtener_tareas(db, usuario_id)
+        if not self.usuario_repo.obtener_por_id(usuario_id):
+            raise ValueError("El usuario asociado no existe.")
 
+        nueva_tarea = Tarea(
+            usuario_id=usuario_id,
+            titulo=titulo,
+            descripcion=descripcion,
+            fecha_creacion=datetime.now(),
+            fecha_limite=fecha_limite,
+            estado=estado,
+            prioridad = prioridad
+        )
+        return self.tarea_repo.crear(nueva_tarea)
 
-def marcar_tarea_como_completada(db: Session, tarea_id: int):
-    tarea = db.query(Tarea).filter(Tarea.id == tarea_id).first()
-    if not tarea:
-        raise ValueError(f"No existe una tarea con ID {tarea_id}.")
-    if tarea.completada:
-        raise ValueError("La tarea ya está marcada como completada.")
+    def obtener_tareas_de_usuario(self, usuario_id: str):
+        return self.tarea_repo.listar_por_usuario(usuario_id)
 
-    return actualizar_tarea(db, tarea_id, True)
+    def marcar_completada(self, tarea_id: str):
+        tarea = self.tarea_repo.obtener_por_id(tarea_id)
+        if not tarea:
+            raise ValueError("Tarea no encontrada.")
+        tarea.estado = True
+        return self.tarea_repo.actualizar(tarea)
 
+    def obtener_tareas_por_estado(self, usuario_id, completada: bool):
+        return self.tarea_repo.listar_por_estado(usuario_id, completada)
 
-def eliminar_una_tarea(db: Session, tarea_id: int):
-    tarea = db.query(Tarea).filter(Tarea.id == tarea_id).first()
-    if not tarea:
-        raise ValueError(f"No existe una tarea con ID {tarea_id}.")
+    def obtener_tareas_que_vencen_hoy(self, usuario_id):
+        return self.tarea_repo.listar_por_fecha_limite_hoy(usuario_id)
 
-    return eliminar_tarea(db, tarea_id)
+    def obtener_tareas_por_rango(self, usuario_id, fecha_inicio, fecha_fin):
+        return self.tarea_repo.listar_por_rango_fecha(
+            usuario_id, fecha_inicio, fecha_fin)
