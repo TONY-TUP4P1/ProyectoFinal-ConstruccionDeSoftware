@@ -12,8 +12,9 @@ Repositorio por entidad:
     - EtiquetaRepositorio
 """
 
-from .categoria_repositorio import CategoriaRepositorio
-from .etiqueta_repositorio import EtiquetaRepositorio
-from .subtarea_repositorio import SubtareaRepositorio
-from .tarea_repositorio import TareaRepositorio
-from .usuario_repositorio import UsuarioRepositorio
+from .usuario_repositorio import UsuarioRepository
+from .tarea_repositorio import TareaRepository
+from .subtarea_repositorio import SubTareaRepository
+from .etiqueta_repositorio import EtiquetaRepository
+from .categoria_repositorio import CategoriaRepository
+

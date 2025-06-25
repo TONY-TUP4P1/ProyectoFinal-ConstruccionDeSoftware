@@ -1,24 +1,13 @@
+from sqlalchemy.orm import Session
 from modelos.categoria import Categoria
-from repositorios.categoria_repositorio import CategoriaRepositorio
+from repositorios.categoria_repositorio import CategoriaRepository
 
+class CategoriaService:
+    def __init__(self, session: Session):
+        self.repo = CategoriaRepository(session)
 
-class CategoriaServicio:
-    def __init__(self, categoria_repo: CategoriaRepositorio):
-        self.categoria_repo = categoria_repo
+    def asignar_categoria(self, categoria: Categoria):
+        self.repo.create(categoria)
 
-    def crear_categoria(self, nombre: str):
-        if not nombre:
-            raise ValueError("El nombre de la categoría es obligatorio.")
-        if self.categoria_repo.obtener_por_nombre(nombre):
-            raise ValueError("La categoría ya existe.")
-        nueva_categoria = Categoria(nombre=nombre)
-        return self.categoria_repo.crear(nueva_categoria)
-
-    def listar_categorias(self):
-        return self.categoria_repo.listar()
-
-    def obtener_categoria(self, categoria_id: str):
-        categoria = self.categoria_repo.obtener_por_id(categoria_id)
-        if not categoria:
-            raise ValueError("Categoría no encontrada.")
-        return categoria
+    def eliminar_categoria(self, categoria_id: str):
+        self.repo.delete(categoria_id)

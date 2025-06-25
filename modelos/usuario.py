@@ -1,16 +1,16 @@
-from sqlalchemy import Column, String, Date, Integer
+from sqlalchemy import Column, String, DateTime
 from sqlalchemy.orm import relationship
-
-from database import Base
+from modelos.base import Base
 
 class Usuario(Base):
-    __tablename__ = "usuarios"
+    __tablename__ = 'usuarios'
 
-    id = Column(String, primary_key=True, index=True)
+    id = Column(String, primary_key=True)
     nombre = Column(String, nullable=False)
     apellido = Column(String, nullable=False)
-    correo = Column(String, unique=True, nullable=False)
     contrasena = Column(String, nullable=False)
-    telefono = Column(String)
-    fecha_nacimiento = Column(Date)
-    tareas = relationship("Tarea", back_populates="usuario")  # ✅
+    correo = Column(String, nullable=False)
+    telefono = Column(String, nullable=False)
+    fecha_nacimiento = Column(DateTime, nullable=False)
+
+    tareas = relationship("Tarea", back_populates="usuario", cascade="all, delete-orphan")

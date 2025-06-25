@@ -1,59 +1,33 @@
 import unittest
-from datetime import datetime
-
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-
 from modelos.base import Base
-from repositorios.tarea_repositorio import TareaRepositorio
-from repositorios.usuario_repositorio import UsuarioRepositorio
-from servicios.tarea_servicio import TareaServicio
-from servicios.usuario_servicio import UsuarioServicio
+from modelos.tarea import Tarea, PrioridadEnum
+from repositorios.tarea_repositorio import TareaRepository
+from datetime import datetime
 
-
-class TestTareaServicio(unittest.TestCase):
+class TestTareaRepository(unittest.TestCase):
     def setUp(self):
-        self.engine = create_engine("sqlite:///:memory:")
-        Base.metadata.create_all(self.engine)
-        self.session = sessionmaker(bind=self.engine)()
-
-        self.usuario_repo = UsuarioRepositorio(self.session)
-        self.tarea_repo = TareaRepositorio(self.session)
-
-        self.usuario_servicio = UsuarioServicio(self.usuario_repo)
-        self.tarea_servicio = TareaServicio(self.tarea_repo, self.usuario_repo)
-
-        self.usuario = self.usuario_servicio.registrar_usuario(
-            "Test", "User", "testuser@example.com", "pass"
-        )
+        engine = create_engine("sqlite:///:memory:")
+        Base.metadata.create_all(engine)
+        Session = sessionmaker(bind=engine)
+        self.session = Session()
+        self.repo = TareaRepository(self.session)
 
     def test_crear_tarea(self):
-        tarea = self.tarea_servicio.crear_tarea(
-            usuario_id=self.usuario.id,
-            titulo="Mi primera tarea",
-            descripcion="Descripción de tarea",
-            fecha_limite=datetime(2025, 12, 31)
+        tarea = Tarea(
+            id="t1",
+            titulo="Leer",
+            descripcion="Leer un libro",
+            fecha_creacion=datetime.now(),
+            fecha_limite=datetime.now(),
+            estado=False,
+            usuario_id="u1",
+            prioridad=PrioridadEnum.media
         )
-        self.assertEqual(tarea.titulo, "Mi primera tarea")
-
-    def test_tarea_sin_titulo(self):
-        with self.assertRaises(ValueError):
-            self.tarea_servicio.crear_tarea(
-                usuario_id=self.usuario.id,
-                titulo=""
-            )
-
-    def test_usuario_no_existente(self):
-        with self.assertRaises(ValueError):
-            self.tarea_servicio.crear_tarea(
-                usuario_id="invalido", titulo="Tarea inválida"
-            )
+        self.repo.create(tarea)
+        tarea_guardada = self.repo.read("t1")
+        self.assertEqual(tarea_guardada.titulo, "Leer")
 
     def tearDown(self):
         self.session.close()
-        self.engine.dispose()
-
-
-
-if __name__ == "__main__":
-    unittest.main()

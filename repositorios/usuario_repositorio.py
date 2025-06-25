@@ -1,24 +1,22 @@
+from sqlalchemy.orm import Session
 from modelos.usuario import Usuario
 
+class UsuarioRepository:
+    def __init__(self, session: Session):
+        self.session = session
 
-class UsuarioRepositorio:
-    def __init__(self, sesion):
-        self.sesion = sesion
+    def create(self, usuario: Usuario):
+        self.session.add(usuario)
+        self.session.commit()
 
-    def crear(self, usuario: Usuario):
-        self.sesion.add(usuario)
-        self.sesion.commit()
-        return usuario
+    def read(self, usuario_id: str):
+        return self.session.query(Usuario).filter_by(id=usuario_id).first()
 
-    def obtener_por_id(self, usuario_id: str):
-        return self.sesion.query(Usuario).filter_by(id=usuario_id).first()
+    def update(self, usuario: Usuario):
+        self.session.commit()
 
-    def obtener_por_correo(self, correo: str):
-        return self.sesion.query(Usuario).filter_by(correo=correo).first()
-
-    def eliminar(self, usuario: Usuario):
-        self.sesion.delete(usuario)
-        self.sesion.commit()
-
-    def listar(self):
-        return self.sesion.query(Usuario).all()
+    def delete(self, usuario_id: str):
+        usuario = self.read(usuario_id)
+        if usuario:
+            self.session.delete(usuario)
+            self.session.commit()

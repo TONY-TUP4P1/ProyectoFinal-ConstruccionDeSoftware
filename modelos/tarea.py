@@ -1,39 +1,31 @@
+from sqlalchemy import Column, String, DateTime, Boolean, ForeignKey, Enum
 import enum
-import uuid
-
-from sqlalchemy import Boolean, Column, DateTime, Enum, ForeignKey, String
 from sqlalchemy.orm import relationship
+from modelos.base import Base
 
-from .base import Base
-from .tareas_etiquetas import tareas_etiquetas
-
-
-class NivelPrioridad(enum.Enum):
-    ALTA = "Alta"
-    MEDIA = "Media"
-    BAJA = "Baja"
-
+class PrioridadEnum(enum.Enum):
+    baja = "baja"
+    media = "media"
+    alta = "alta"
 
 class Tarea(Base):
-    __tablename__ = "tareas"
+    __tablename__ = 'tareas'
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    id = Column(String, primary_key=True)
     titulo = Column(String, nullable=False)
-    descripcion = Column(String)
-    fecha_creacion = Column(DateTime)
-    fecha_limite = Column(DateTime)
-    estado = Column(Boolean, default=False)
-    prioridad = Column(Enum(NivelPrioridad), default=NivelPrioridad.MEDIA)
-    usuario_id = Column(String, ForeignKey("usuarios.id"))
-    categoria_id = Column(String, ForeignKey("categorias.id"), nullable=True)
+    descripcion = Column(String, nullable=False)
+    fecha_creacion = Column(DateTime, nullable=False)
+    fecha_limite = Column(DateTime, nullable=False)
+    estado = Column(Boolean, nullable=False)
+    prioridad = Column(Enum(PrioridadEnum), nullable=False, default=PrioridadEnum.media)
 
-    usuarios = relationship("Usuario", back_populates="tareas")
-    subtareas = relationship(
-        "Subtarea",
-        back_populates="tarea",
-        cascade="all, delete-orphan")
+
+    usuario_id = Column(String, ForeignKey('usuarios.id'), nullable=False)
+    usuario = relationship("Usuario", back_populates="tareas")
+
+    subtareas = relationship("SubTarea", back_populates="tarea", cascade="all, delete-orphan")
+    etiquetas = relationship("Etiqueta", back_populates="tarea", cascade="all, delete-orphan")
+
+    categoria_id = Column(String, ForeignKey('categorias.id'), nullable=True)
     categoria = relationship("Categoria", back_populates="tareas")
-    etiquetas = relationship(
-        "Etiqueta",
-        secondary=tareas_etiquetas,
-        back_populates="tareas")
+

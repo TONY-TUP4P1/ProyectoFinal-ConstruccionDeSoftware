@@ -1,24 +1,22 @@
+from sqlalchemy.orm import Session
 from modelos.categoria import Categoria
 
+class CategoriaRepository:
+    def __init__(self, session: Session):
+        self.session = session
 
-class CategoriaRepositorio:
-    def __init__(self, sesion):
-        self.sesion = sesion
+    def create(self, categoria: Categoria):
+        self.session.add(categoria)
+        self.session.commit()
 
-    def crear(self, categoria: Categoria):
-        self.sesion.add(categoria)
-        self.sesion.commit()
-        return categoria
+    def read(self, categoria_id: str):
+        return self.session.query(Categoria).filter_by(id=categoria_id).first()
 
-    def obtener_por_id(self, categoria_id: str):
-        return self.sesion.query(Categoria).filter_by(id=categoria_id).first()
+    def update(self, categoria: Categoria):
+        self.session.commit()
 
-    def obtener_por_nombre(self, nombre: str):
-        return self.sesion.query(Categoria).filter_by(nombre=nombre).first()
-
-    def listar(self):
-        return self.sesion.query(Categoria).all()
-
-    def eliminar(self, categoria: Categoria):
-        self.sesion.delete(categoria)
-        self.sesion.commit()
+    def delete(self, categoria_id: str):
+        categoria = self.read(categoria_id)
+        if categoria:
+            self.session.delete(categoria)
+            self.session.commit()

@@ -12,8 +12,9 @@ Servicios por entidad:
     - EtiquetaServicio
 """
 
-from .categoria_servicio import CategoriaServicio
-from .etiqueta_servicio import EtiquetaServicio
-from .subtarea_servicio import SubtareaServicio
-from .tarea_servicio import TareaServicio
-from .usuario_servicio import UsuarioServicio
+from .usuario_servicio import UsuarioService
+from .tarea_servicio import TareaService
+from .subtarea_servicio import SubTareaService
+from .etiqueta_servicio import EtiquetaService
+from .categoria_servicio import CategoriaService
+

@@ -1,24 +1,22 @@
+from sqlalchemy.orm import Session
 from modelos.etiqueta import Etiqueta
 
+class EtiquetaRepository:
+    def __init__(self, session: Session):
+        self.session = session
 
-class EtiquetaRepositorio:
-    def __init__(self, sesion):
-        self.sesion = sesion
+    def create(self, etiqueta: Etiqueta):
+        self.session.add(etiqueta)
+        self.session.commit()
 
-    def crear(self, etiqueta: Etiqueta):
-        self.sesion.add(etiqueta)
-        self.sesion.commit()
-        return etiqueta
+    def read(self, etiqueta_id: str):
+        return self.session.query(Etiqueta).filter_by(id=etiqueta_id).first()
 
-    def obtener_por_id(self, etiqueta_id: str):
-        return self.sesion.query(Etiqueta).filter_by(id=etiqueta_id).first()
+    def update(self, etiqueta: Etiqueta):
+        self.session.commit()
 
-    def obtener_por_nombre(self, nombre: str):
-        return self.sesion.query(Etiqueta).filter_by(nombre=nombre).first()
-
-    def listar(self):
-        return self.sesion.query(Etiqueta).all()
-
-    def eliminar(self, etiqueta: Etiqueta):
-        self.sesion.delete(etiqueta)
-        self.sesion.commit()
+    def delete(self, etiqueta_id: str):
+        etiqueta = self.read(etiqueta_id)
+        if etiqueta:
+            self.session.delete(etiqueta)
+            self.session.commit()
