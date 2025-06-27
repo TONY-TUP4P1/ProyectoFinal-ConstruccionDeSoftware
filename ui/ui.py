@@ -742,7 +742,8 @@ def guardar_nueva_tarea():
     etiqueta = entry_crear_etiqueta.get().strip()
     descripcion = text_crear_descripcion.get("1.0", tk.END).strip()
 
-    if not all([titulo, fecha_str, estado_ui, prioridad_ui, etiqueta, descripcion]):
+    if not all([titulo, fecha_str, estado_ui, prioridad_ui, etiqueta, descripcion]) or \
+       any(field in [titulo, fecha_str, etiqueta, descripcion] for field in ["", "Ingrese su Correo Electrónico", "dd/mm/aaaa", "Ingrese su contraseña"]):
         messagebox.showwarning("Error", "Por favor, completa todos los campos.")
         return
 
@@ -894,7 +895,8 @@ def guardar_cambios_tarea_actualizada():
     etiqueta = entry_editar_etiqueta.get().strip()
     descripcion = text_editar_descripcion.get("1.0", tk.END).strip()
 
-    if not all([titulo, fecha_str, estado_ui, prioridad_ui, etiqueta, descripcion]):
+    if not all([titulo, fecha_str, estado_ui, prioridad_ui, etiqueta, descripcion]) or \
+       any(field in [titulo, fecha_str, etiqueta, descripcion] for field in ["", "Ingrese su Correo Electrónico", "dd/mm/aaaa", "Ingrese su contraseña"]):
         messagebox.showwarning("Error", "Por favor, completa todos los campos.")
         return
 
@@ -1191,7 +1193,7 @@ def cerrar_sesion():
 
     entry_login_pass.delete(0, tk.END)
     entry_login_pass.insert(0, "Ingrese su contraseña")
-    entry_login_pass.config(fg="gray", show="")
+    entry_login_pass.config(fg="gray", show="") # Restablecer el show para que el placeholder sea visible
 
 
 # --- Inicio de la aplicación ---

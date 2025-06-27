@@ -16,7 +16,7 @@ class SubtareaService:
         try:
             insertar_subtarea(
                 self.session, # Pasa la sesión al repositorio
-                subtarea.subatarea_id,
+                subtarea.subtarea_id, # ✅ CORRECCIÓN: Usar 'subtarea_id'
                 subtarea.titulo,
                 subtarea.descripcion,
                 subtarea.completada,
@@ -34,10 +34,10 @@ class SubtareaService:
         """Lista las subtareas de una tarea específica."""
         return obtener_subtareas_por_tarea(self.session, tarea_id)
 
-    def actualizar_subtarea(self, subatarea_id: str, **kwargs):
+    def actualizar_subtarea(self, subtarea_id: str, **kwargs): # ✅ CORRECCIÓN: Usar 'subtarea_id'
         """Actualiza una subtarea existente."""
         try:
-            actualizar_subtarea(self.session, subatarea_id, **kwargs) # Pasa la sesión
+            actualizar_subtarea(self.session, subtarea_id, **kwargs) # Pasa la sesión y el ID corregido
             self.session.commit()
             return True
         except Exception as e:
@@ -45,14 +45,13 @@ class SubtareaService:
             print(f"Error al actualizar subtarea: {e}")
             return False
 
-    def eliminar_subtarea(self, subatarea_id: str):
+    def eliminar_subtarea(self, subtarea_id: str): # ✅ CORRECCIÓN: Usar 'subtarea_id'
         """Elimina una subtarea por su ID."""
         try:
-            eliminar_subtarea(self.session, subatarea_id) # Pasa la sesión
+            eliminar_subtarea(self.session, subtarea_id) # Pasa la sesión y el ID corregido
             self.session.commit()
             return True
         except Exception as e:
             self.session.rollback()
             print(f"Error al eliminar subtarea: {e}")
             return False
-

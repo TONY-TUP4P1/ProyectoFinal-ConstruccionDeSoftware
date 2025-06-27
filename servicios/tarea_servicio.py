@@ -11,7 +11,7 @@ from repositorios.tarea_repositorio import (
     eliminar_tarea_por_id
 )
 # Importa las funciones del repositorio de subtarea
-from repositorios.subtarea_repositorio import (
+from repositorios.subtarea_repositorio import ( # Asegúrate de que las funciones aquí ya estén actualizadas
     insertar_subtarea,
     obtener_subtareas_por_tarea,
     actualizar_subtarea,
@@ -45,7 +45,7 @@ class TareaService:
                 tarea.fecha_limite,
                 tarea.estado,
                 tarea.prioridad,
-                tarea.usuario_id, # CORRECCIÓN: Usar usuario_id
+                tarea.usuario_id,
                 tarea.categoria_id,
                 etiquetas=None # Las etiquetas se añadirán después
             )
@@ -55,13 +55,13 @@ class TareaService:
             if subtareas_data:
                 for sub_data in subtareas_data:
                     nueva_subtarea = Subtarea(
-                        subatarea_id=str(uuid.uuid4()),
+                        subtarea_id=str(uuid.uuid4()), # ✅ CORRECCIÓN: Usar 'subtarea_id'
                         titulo=sub_data['titulo'],
                         descripcion=sub_data.get('descripcion', ''), # Asume descripción opcional
                         completada=sub_data.get('completada', False),
                         tarea_id=tarea.tarea_id
                     )
-                    insertar_subtarea(self.session, nueva_subtarea.subatarea_id, nueva_subtarea.titulo, # Pasa la sesión
+                    insertar_subtarea(self.session, nueva_subtarea.subtarea_id, nueva_subtarea.titulo, # Pasa la sesión, ✅ CORRECCIÓN: usar subtarea_id
                                       nueva_subtarea.descripcion, nueva_subtarea.completada,
                                       nueva_subtarea.tarea_id)
             
@@ -133,18 +133,18 @@ class TareaService:
                 # Obtener las subtareas actuales dentro de la misma sesión para evitar LazyLoadError
                 current_subtasks = list(tarea.subtareas) # Copia la lista para evitar problemas al modificarla
                 for existing_subtarea in current_subtasks:
-                    eliminar_subtarea(self.session, existing_subtarea.subatarea_id) # Pasa la sesión
+                    eliminar_subtarea(self.session, existing_subtarea.subtarea_id) # Pasa la sesión, ✅ CORRECCIÓN: usar subtarea_id
 
                 # Luego, insertar las nuevas subtareas
                 for sub_data in subtareas_data:
                     nueva_subtarea = Subtarea(
-                        subatarea_id=str(uuid.uuid4()),
+                        subtarea_id=str(uuid.uuid4()), # ✅ CORRECCIÓN: Usar 'subtarea_id'
                         titulo=sub_data['titulo'],
                         descripcion=sub_data.get('descripcion', ''),
                         completada=sub_data.get('completada', False),
                         tarea_id=tarea_id
                     )
-                    insertar_subtarea(self.session, nueva_subtarea.subatarea_id, nueva_subtarea.titulo, # Pasa la sesión
+                    insertar_subtarea(self.session, nueva_subtarea.subtarea_id, nueva_subtarea.titulo, # Pasa la sesión, ✅ CORRECCIÓN: usar subtarea_id
                                       nueva_subtarea.descripcion, nueva_subtarea.completada,
                                       nueva_subtarea.tarea_id)
 
